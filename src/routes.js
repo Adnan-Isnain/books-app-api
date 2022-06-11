@@ -6,8 +6,7 @@ const routes = [{
     handler: (req, h) => {
         return "Hello world!"
     }
-},
-{
+}, {
     method: "POST",
     path: "/books",
     handler: addBookHandler
