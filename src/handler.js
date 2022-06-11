@@ -19,11 +19,12 @@ const addBookHandler = (req, h) => {
         }
 
         id = nanoid(16)
-        now = new Date().toISOString()
+        createdAt = new Date().toISOString()
+        updatedAt = createdAt
+        finished = readPage === pageCount
 
         data = {
-            id, name, year, author, summary, publisher, pageCount, readPage, reading,
-            finished: readPage === pageCount
+            id, name, year, author, summary, publisher, pageCount, readPage, reading, finished, createdAt, updatedAt
         }
 
         books.push(data)
@@ -61,20 +62,59 @@ const getAllBooksHandler = (req, h) => {
 
 const getBookByIdHandler = (req, h) => {
     const bookId = req.params.bookId
-    const book = books.filter(book => book.id === bookId)
-    if (book.length > 0) {
+    const book = books.filter(book => book.id === bookId)[0]
+    if (book === undefined) {
         return h.response({
-            status: "success",
-            data: {
-                book
-            }
-        }).code(200)
+            status: "fail",
+            message: "Buku tidak ditemukan"
+        }).code(404)
     }
 
     return h.response({
-        status: "fail",
-        message: "Buku tidak ditemukan"
-    }).code(404)
+        status: "success",
+        data: {
+            book
+        }
+    }).code(200)
 }
 
-module.exports = { addBookHandler, getAllBooksHandler, getBookByIdHandler }
+
+const editBookByIdHandler = (req, h) => {
+    const bookId = req.params.bookId
+    const { name, year, author, summary, publisher, pageCount, readPage, reading } = req.payload
+
+    if (name === undefined) {
+        return h.response({
+            status: "fail",
+            message: "Gagal memperbarui buku. Mohon isi nama buku"
+        }).code(400)
+    }
+
+    if (readPage > pageCount) {
+        return h.response({
+            status: "fail",
+            message: "Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount"
+        }).code(400)
+    }
+
+    const bookIdx = books.findIndex(book => book.id == bookId)
+    if (bookIdx == -1) {
+        return h.response({
+            status: "fail",
+            message: "Gagal memperbarui buku. Id tidak ditemukan"
+        }).code(404)
+    }
+
+    updatedAt = new Date().toISOString()
+    finished = readPage === pageCount
+    books[bookIdx] = {
+        ...books[bookIdx], name, year, author, summary, publisher,
+        pageCount, readPage, reading, finished, updatedAt
+    }
+    return h.response({
+        status: "success",
+        message: "Buku berhasil diperbarui"
+    }).code(200)
+}
+
+module.exports = { addBookHandler, getAllBooksHandler, getBookByIdHandler, editBookByIdHandler }

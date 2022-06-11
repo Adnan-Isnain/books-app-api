@@ -1,24 +1,35 @@
-const { addBookHandler, getAllBooksHandler, getBookByIdHandler } = require("./handler")
+const { addBookHandler, getAllBooksHandler, getBookByIdHandler, editBookByIdHandler } = require("./handler")
 
-const routes = [{
+const root = {
     method: "GET",
     path: "/",
-    handler: (req, h) => {
+    handler: () => {
         return "Hello world!"
     }
-}, {
-    method: "POST",
-    path: "/books",
-    handler: addBookHandler
-}, {
+}
+
+const getAllBooks = {
     method: "GET",
     path: "/books",
     handler: getAllBooksHandler
-}, {
+}
+
+const addBook = {
+    method: "POST",
+    path: "/books",
+    handler: addBookHandler
+}
+
+const getBookById = {
     method: "GET",
     path: "/books/{bookId}",
     handler: getBookByIdHandler
-}]
+}
 
+const editBookById = {
+    method: "PUT",
+    path: "/books/{bookId}",
+    handler: editBookByIdHandler
+}
 
-module.exports = routes
+module.exports = [root, getAllBooks, addBook, getBookById, editBookById]
