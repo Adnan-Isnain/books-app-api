@@ -1,48 +1,80 @@
+const { nanoid } = require("nanoid")
+const books = require("./books")
+
 const addBookHandler = (req, h) => {
     try {
-        const payload = req.payload
-        if (payload.name === undefined) {
-            res = h.response({
+        const { name, year, author, summary, publisher, pageCount, readPage, reading } = req.payload
+        if (name === undefined) {
+            return h.response({
                 "status": "fail",
                 "message": "Gagal menambahkan buku. Mohon isi nama buku"
             }).code(400)
-
-            return res
         }
 
-        if (payload.readPage > payload.PageCount) {
-            res = h.response({
+        if (readPage > pageCount) {
+            return h.response({
                 "status": "fail",
                 "message": "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount"
             }).code(400)
-
-            return res
         }
 
         id = nanoid(16)
         now = new Date().toISOString()
 
-        data = { ...payload, createdAt: now, updatedAt: now }
-        res = h.response({
-            status: "OK!",
-            message: `Hai ${data.syalala}, salam kenal!`
-        })
-        res.code(200)
-        return res
+        data = {
+            id, name, year, author, summary, publisher, pageCount, readPage, reading,
+            finished: readPage === pageCount
+        }
 
+        books.push(data)
+        isSuccess = books.filter(book => book.id === id).length > 0
+        if (isSuccess) {
+            return h.response({
+                "status": "success",
+                "message": "Buku berhasil ditambahkan",
+                "data": {
+                    "bookId": id
+                }
+            }).code(200)
+        }
+
+        throw new Error("Failed to added book!")
     } catch (e) {
         console.log(e)
         console.log(e.message)
-        res = h.response({
+        return h.response({
             "status": "error",
             "message": "Buku gagal ditambahkan"
         }).code(500)
-
-        return res
     }
 
 }
 
+const getAllBooksHandler = (req, h) => {
+    return h.response({
+        status: "success",
+        data: {
+            books
+        }
+    }).code(200)
+}
 
+const getBookByIdHandler = (req, h) => {
+    const bookId = req.params.bookId
+    const book = books.filter(book => book.id === bookId)
+    if (book.length > 0) {
+        return h.response({
+            status: "success",
+            data: {
+                book
+            }
+        }).code(200)
+    }
 
-module.exports = { addBookHandler }
+    return h.response({
+        status: "fail",
+        message: "Buku tidak ditemukan"
+    }).code(404)
+}
+
+module.exports = { addBookHandler, getAllBooksHandler, getBookByIdHandler }
