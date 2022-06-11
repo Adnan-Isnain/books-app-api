@@ -1,4 +1,4 @@
-const { addBookHandler, getAllBooksHandler, getBookByIdHandler, editBookByIdHandler } = require("./handler")
+const { addBookHandler, getAllBooksHandler, getBookByIdHandler, editBookByIdHandler, deleteBookByIdHandler } = require("./handler")
 
 const root = {
     method: "GET",
@@ -32,4 +32,9 @@ const editBookById = {
     handler: editBookByIdHandler
 }
 
-module.exports = [root, getAllBooks, addBook, getBookById, editBookById]
+const deleteBookById = {
+    method: "DELETE",
+    path: "/books/{bookId}",
+    handler: deleteBookByIdHandler
+}
+module.exports = [root, getAllBooks, addBook, getBookById, editBookById, deleteBookById]

@@ -98,7 +98,7 @@ const editBookByIdHandler = (req, h) => {
     }
 
     const bookIdx = books.findIndex(book => book.id == bookId)
-    if (bookIdx == -1) {
+    if (bookIdx === -1) {
         return h.response({
             status: "fail",
             message: "Gagal memperbarui buku. Id tidak ditemukan"
@@ -117,4 +117,21 @@ const editBookByIdHandler = (req, h) => {
     }).code(200)
 }
 
-module.exports = { addBookHandler, getAllBooksHandler, getBookByIdHandler, editBookByIdHandler }
+const deleteBookByIdHandler = (req, h) => {
+    const bookId = req.params.bookId
+    const bookIdx = books.findIndex(book => book.id === bookId)
+    if (bookIdx === -1) {
+        return h.response({
+            status: "fail",
+            message: "Buku gagal dihapus. Id tidak ditemukan"
+        }).code(404)
+    }
+
+    books.splice(bookIdx, 1)
+    return h.response({
+        status: "success",
+        message: "Buku berhasil dihapus"
+    }).code(200)
+}
+
+module.exports = { addBookHandler, getAllBooksHandler, getBookByIdHandler, editBookByIdHandler, deleteBookByIdHandler }
