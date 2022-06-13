@@ -52,8 +52,6 @@ const addBookHandler = (req, h) => {
 }
 
 const getAllFilterBooks = (query) => {
-    Object.keys(query).forEach(key => query[key] === undefined && delete query[key])
-
     return {
         books: books.filter(book => {
             return Object.keys(query).every(field => {
@@ -72,9 +70,9 @@ const getAllBooksHandler = (req, h) => {
     if (Object.entries(req.query).length > 0) {
         const { reading, finished, name } = req.query
         const query = {
-            reading: reading !== undefined ? (reading === "1") : reading,
-            finished: finished !== undefined ? (finished === "1") : finished,
-            name: name !== undefined ? name.toLowerCase() : name
+            ...(reading !== undefined && { reading: (reading === "1") }),
+            ...(finished !== undefined && { finished: (finished === "1") }),
+            ...(name !== undefined && { name: name.toLowerCase() }),
         }
 
         return h.response({
