@@ -8,7 +8,7 @@
     "start": "nodemon src/index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "adnan isnain",
   "license": "ISC",
   "devDependencies": {
     "nodemon": "^2.0.16"

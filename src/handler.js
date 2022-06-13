@@ -19,12 +19,12 @@ const addBookHandler = (req, h) => {
         }
 
         id = nanoid(16)
-        createdAt = new Date().toISOString()
-        updatedAt = createdAt
+        insertedAt = new Date().toISOString()
+        updatedAt = insertedAt
         finished = readPage === pageCount
 
         data = {
-            id, name, year, author, summary, publisher, pageCount, readPage, reading, finished, createdAt, updatedAt
+            id, name, year, author, summary, publisher, pageCount, readPage, reading, finished, insertedAt, updatedAt
         }
 
         books.push(data)
@@ -36,7 +36,7 @@ const addBookHandler = (req, h) => {
                 "data": {
                     "bookId": id
                 }
-            }).code(200)
+            }).code(201)
         }
 
         throw new Error("Failed to added book!")
@@ -51,11 +51,35 @@ const addBookHandler = (req, h) => {
 
 }
 
+const getAllFilterBooks = (query) => {
+    return {
+        books: books.filter(book => {
+            for (let key in query) {
+                isQuery = key === "name" ? query[key].toLowerCase() : (query[key] === "1")
+                if ((book[key] === isQuery) || ((key === "name") && book[key].toLowerCase().includes(isQuery))) {
+                    return book
+                }
+            }
+        }).map(({ id, name, publisher }) => ({ id, name, publisher }))
+    }
+}
+
+
 const getAllBooksHandler = (req, h) => {
+    if (Object.entries(req.query).length > 0) {
+        return h.response({
+            status: "success",
+            data: getAllFilterBooks(req.query)
+        }).code(200)
+
+    }
+
+
+    const allBooks = books.map(({ id, name, publisher }) => ({ id, name, publisher }))
     return h.response({
         status: "success",
         data: {
-            books
+            books: allBooks
         }
     }).code(200)
 }
@@ -133,5 +157,6 @@ const deleteBookByIdHandler = (req, h) => {
         message: "Buku berhasil dihapus"
     }).code(200)
 }
+
 
 module.exports = { addBookHandler, getAllBooksHandler, getBookByIdHandler, editBookByIdHandler, deleteBookByIdHandler }

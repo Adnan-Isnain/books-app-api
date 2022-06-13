@@ -37,4 +37,5 @@ const deleteBookById = {
     path: "/books/{bookId}",
     handler: deleteBookByIdHandler
 }
+
 module.exports = [root, getAllBooks, addBook, getBookById, editBookById, deleteBookById]
