@@ -52,14 +52,17 @@ const addBookHandler = (req, h) => {
 }
 
 const getAllFilterBooks = (query) => {
+    Object.keys(query).forEach(key => query[key] === undefined && delete query[key])
+
     return {
         books: books.filter(book => {
-            for (let key in query) {
-                isQuery = key === "name" ? query[key].toLowerCase() : (query[key] === "1")
-                if ((book[key] === isQuery) || ((key === "name") && book[key].toLowerCase().includes(isQuery))) {
-                    return book
+            return Object.keys(query).every(field => {
+                if (field === "name") {
+                    return book[field].toLowerCase().includes(query[field])
                 }
-            }
+
+                return book[field] === query[field]
+            })
         }).map(({ id, name, publisher }) => ({ id, name, publisher }))
     }
 }
@@ -67,9 +70,16 @@ const getAllFilterBooks = (query) => {
 
 const getAllBooksHandler = (req, h) => {
     if (Object.entries(req.query).length > 0) {
+        const { reading, finished, name } = req.query
+        const query = {
+            reading: reading !== undefined ? (reading === "1") : reading,
+            finished: finished !== undefined ? (finished === "1") : finished,
+            name: name !== undefined ? name.toLowerCase() : name
+        }
+
         return h.response({
             status: "success",
-            data: getAllFilterBooks(req.query)
+            data: getAllFilterBooks(query)
         }).code(200)
 
     }
