@@ -6,35 +6,46 @@ const addBookHandler = (req, h) => {
         const { name, year, author, summary, publisher, pageCount, readPage, reading } = req.payload
         if (name === undefined) {
             return h.response({
-                "status": "fail",
-                "message": "Gagal menambahkan buku. Mohon isi nama buku"
+                status: "fail",
+                message: "Gagal menambahkan buku. Mohon isi nama buku"
             }).code(400)
         }
 
         if (readPage > pageCount) {
             return h.response({
-                "status": "fail",
-                "message": "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount"
+                status: "fail",
+                message: "Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount"
             }).code(400)
         }
 
-        id = nanoid(16)
-        insertedAt = new Date().toISOString()
-        updatedAt = insertedAt
-        finished = readPage === pageCount
+        const id = nanoid(16)
+        const insertedAt = new Date().toISOString()
+        const updatedAt = insertedAt
+        const finished = readPage === pageCount
 
-        data = {
-            id, name, year, author, summary, publisher, pageCount, readPage, reading, finished, insertedAt, updatedAt
+        const data = {
+            id,
+            name,
+            year,
+            author,
+            summary,
+            publisher,
+            pageCount,
+            readPage,
+            reading,
+            finished,
+            insertedAt,
+            updatedAt
         }
 
         books.push(data)
-        isSuccess = books.filter(book => book.id === id).length > 0
+        const isSuccess = books.filter(book => book.id === id).length > 0
         if (isSuccess) {
             return h.response({
-                "status": "success",
-                "message": "Buku berhasil ditambahkan",
-                "data": {
-                    "bookId": id
+                status: "success",
+                message: "Buku berhasil ditambahkan",
+                data: {
+                    bookId: id
                 }
             }).code(201)
         }
@@ -44,8 +55,8 @@ const addBookHandler = (req, h) => {
         console.log(e)
         console.log(e.message)
         return h.response({
-            "status": "error",
-            "message": "Buku gagal ditambahkan"
+            status: "error",
+            message: "Buku gagal ditambahkan"
         }).code(500)
     }
 
@@ -137,11 +148,20 @@ const editBookByIdHandler = (req, h) => {
         }).code(404)
     }
 
-    updatedAt = new Date().toISOString()
-    finished = readPage === pageCount
+    const updatedAt = new Date().toISOString()
+    const finished = readPage === pageCount
     books[bookIdx] = {
-        ...books[bookIdx], name, year, author, summary, publisher,
-        pageCount, readPage, reading, finished, updatedAt
+        ...books[bookIdx],
+        name,
+        year,
+        author,
+        summary,
+        publisher,
+        pageCount,
+        readPage,
+        reading,
+        finished,
+        updatedAt
     }
     return h.response({
         status: "success",
